@@ -1,31 +1,38 @@
+import re
 from gemini import perguntar_ao_gemini
 from mistral import perguntar_ao_mistral
 from llama import perguntar_ao_llama
-import re
 
 def rankear_respostas(pergunta, respostas):
-    prompt = f"Pergunta: {pergunta}\n\n"
-    prompt += "Aqui estão as três respostas para a pergunta. Classifique-as da melhor para a pior:\n\n"
-    
-    for idx, resposta in enumerate(respostas, 1):
-        prompt += f"Resposta {idx}: {resposta}\n"
-    
-    prompt += "\nPor favor, retorne o ranking apenas no formato: [1, 2, 3]."
-    ranking_gemini = perguntar_ao_gemini(prompt)
-    ranking_mistral = perguntar_ao_mistral(prompt)
-    ranking_llama = perguntar_ao_llama(prompt)
-    
     def extrair_ranking(resposta):
         match = re.search(r'\[\d,\s\d,\s\d\]', resposta)
         if match:
             return match.group(0)
         else:
-            return "Erro: Ranking não encontrado"
-    
-    ranking_gemini = extrair_ranking(ranking_gemini)
-    ranking_mistral = extrair_ranking(ranking_mistral)
-    ranking_llama = extrair_ranking(ranking_llama)
-    
+            return None
+
+    while True:
+        prompt = f"Pergunta: {pergunta}\n\n"
+        prompt += "Aqui estão as três respostas para a pergunta. Classifique-as da melhor para a pior:\n\n"
+        
+        for idx, resposta in enumerate(respostas, 1):
+            prompt += f"Resposta {idx}: {resposta}\n"
+        
+        prompt += "\nPor favor, retorne o ranking apenas no formato: [1, 2, 3]."
+        
+        ranking_gemini = perguntar_ao_gemini(prompt)
+        ranking_mistral = perguntar_ao_mistral(prompt)
+        ranking_llama = perguntar_ao_llama(prompt)
+        
+        ranking_gemini = extrair_ranking(ranking_gemini)
+        ranking_mistral = extrair_ranking(ranking_mistral)
+        ranking_llama = extrair_ranking(ranking_llama)
+        
+        if ranking_gemini and ranking_mistral and ranking_llama:
+            break
+        else:
+            print("Erro ao extrair o ranking. Tentando novamente...")
+
     return ranking_gemini, ranking_mistral, ranking_llama
 
 def determinar_modelo_vencedor(ranking_gemini, ranking_mistral, ranking_llama):
