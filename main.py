@@ -3,8 +3,6 @@ from gemini import perguntar_ao_gemini
 from llama import perguntar_ao_llama
 from qwen import perguntar_ao_qwen
 
-import re
-
 def rankear_respostas(pergunta, respostas):
     def extrair_ranking(resposta):
         match = re.search(r'\[(\d),\s*(\d),\s*(\d)\]', resposta)
@@ -45,6 +43,12 @@ def rankear_respostas(pergunta, respostas):
     return ranking_gemini, ranking_qwen, ranking_llama
 
 def determinar_modelo_vencedor(ranking_gemini, ranking_qwen, ranking_llama):
+    modelos = {
+        1: "Gemini",
+        2: "Qwen",
+        3: "Llama"
+    }
+
     def obter_primeira_e_segunda_posicao(ranking):
         ranking = eval(ranking)
         return ranking[0], ranking[1]
@@ -53,21 +57,14 @@ def determinar_modelo_vencedor(ranking_gemini, ranking_qwen, ranking_llama):
     primeira_posicao_qwen, segunda_posicao_qwen = obter_primeira_e_segunda_posicao(ranking_qwen)
     primeira_posicao_llama, segunda_posicao_llama = obter_primeira_e_segunda_posicao(ranking_llama)
 
-    if primeira_posicao_gemini == primeira_posicao_qwen:
-        return primeira_posicao_gemini
-    elif primeira_posicao_gemini == primeira_posicao_llama:
-        return primeira_posicao_gemini
-    elif primeira_posicao_qwen == primeira_posicao_llama:
-        return primeira_posicao_qwen
-    elif segunda_posicao_gemini == segunda_posicao_qwen:
-        return segunda_posicao_gemini
-    elif segunda_posicao_gemini == segunda_posicao_llama:
-        return segunda_posicao_gemini
-    elif segunda_posicao_qwen == segunda_posicao_llama:
-        return segunda_posicao_qwen
-    else:
-        return "Empate entre todos os modelos"
+    contagem = {}
+    contagem[primeira_posicao_gemini] = contagem.get(primeira_posicao_gemini, 0) + 1
+    contagem[primeira_posicao_qwen] = contagem.get(primeira_posicao_qwen, 0) + 1
+    contagem[primeira_posicao_llama] = contagem.get(primeira_posicao_llama, 0) + 1
 
+    modelo_vencedor_numero = max(contagem, key=contagem.get)
+
+    return modelos.get(modelo_vencedor_numero, "Empate entre todos os modelos")
 
 pergunta = "Quais são as fases da Lua?"
 print(f"Pergunta: {pergunta}\n")
@@ -78,7 +75,7 @@ resposta_llama = perguntar_ao_llama(pergunta)
 print("\n--- Respostas dos Modelos ---")
 print(f"🔹 Gemini: {resposta_gemini}")
 print("\n----------------")
-print(f"🔹 qwen: {resposta_qwen}")
+print(f"🔹 Qwen: {resposta_qwen}")
 print("\n----------------")
 print(f"🔹 Llama: {resposta_llama}")
 print("\n----------------")
@@ -89,7 +86,7 @@ ranking_gemini, ranking_qwen, ranking_llama = rankear_respostas(pergunta, respos
 print("\n--- Rankings dos Modelos ---")
 print(f"🔹 Ranking do Gemini: {ranking_gemini}")
 print("\n----------------")
-print(f"🔹 Ranking do qwen: {ranking_qwen}")
+print(f"🔹 Ranking do Qwen: {ranking_qwen}")
 print("\n----------------")
 print(f"🔹 Ranking do Llama: {ranking_llama}")
 print("\n----------------")
