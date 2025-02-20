@@ -13,15 +13,13 @@ headers = {
     "Content-Type": "application/json"
 }
 
-def perguntar_ao_mistral(pergunta):
+def perguntar_ao_qwen(pergunta):
     payload = {
-        "model": "deepseek/deepseek-r1:free",
+        "model": "qwen/qwen-vl-plus:free",
         "messages": [{"role": "user", "content": pergunta}],
         "max_tokens": 500
     }
     response = requests.post(url, headers=headers, json=payload)
-
-    print("Resposta do Mistral:", response.json()["choices"][0]["message"]["content"].strip())
     
     if response.status_code == 200:
         data = response.json()

@@ -26,8 +26,3 @@ def perguntar_ao_llama(pergunta):
         return data["choices"][0]["message"]["content"].strip()
     else:
         return f"Erro: {response.status_code} - {response.text}"
-
-p = "quem é o homem mais rico do mundo?"
-
-r = perguntar_ao_llama(p)
-print(r)
