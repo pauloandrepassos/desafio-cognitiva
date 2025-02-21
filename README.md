@@ -28,7 +28,7 @@ Este repositório contém a solução para o desafio técnico proposto pela Cogn
 ### Pré-requisitos
 
 - Python 3.8 ou superior instalado.
-- Acesso às APIs dos modelos utilizados (Google Gemini, Qwen, Llama). Certifique-se de ter as chaves de API necessárias.
+- Acesso às APIs dos modelos utilizados (Google Gemini, Qwen, Llama). Certifique-se de ter as chaves de API necessárias (Para os modelos Qwen e Llama use a api do OpenRouter). 
 
 ### Passos para Execução
 
